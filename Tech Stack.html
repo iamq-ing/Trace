@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Trance | Course Progress Tracker</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0a0a0c 0%, #0f0f14 100%);
+      font-family: 'Inter', sans-serif;
+      color: #ecedee;
+      min-height: 100vh;
+    }
+
+    /* Navigation Bar */
+    .navbar {
+      background: rgba(10, 10, 12, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(219, 118, 42, 0.2);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #db762a, #e9af61);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .logo i {
+      color: #db762a;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(219, 118, 42, 0.3);
+      padding: 0.6rem 1.2rem;
+      border-radius: 40px;
+      color: #ecedee;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+    }
+
+    .nav-btn:hover {
+      background: linear-gradient(135deg, #db762a, #c86214);
+      border-color: transparent;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(219, 118, 42, 0.3);
+      color: white;
+    }
+
+    .nav-btn.active {
+      background: linear-gradient(135deg, #db762a, #c86214);
+      border-color: transparent;
+      color: white;
+    }
+
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* Glassmorphism header */
+    .hero {
+      background: linear-gradient(125deg, #16161a, #0b0b0e, #111116);
+      border-radius: 2rem;
+      padding: 1.8rem 2.2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
+      border: 1px solid rgba(219, 118, 42, 0.2);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .score-panel {
+      background: rgba(17, 18, 21, 0.8);
+      backdrop-filter: blur(10px);
+      border-radius: 28px;
+      padding: 0.6rem 2rem;
+      border: 1px solid rgba(219, 118, 42, 0.3);
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease;
+    }
+    .score-panel:hover {
+      transform: translateY(-2px);
+      border-color: #db762a;
+    }
+    .score-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: #db762a;
+      font-weight: 600;
+    }
+    .score-value {
+      font-size: 3.5rem;
+      font-weight: 800;
+      line-height: 1;
+      background: linear-gradient(135deg, #fff, #db762a);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .score-badge {
+      font-size: 0.7rem;
+      background: rgba(219, 118, 42, 0.15);
+      padding: 4px 12px;
+      border-radius: 40px;
+      margin-top: 6px;
+      display: inline-block;
+      font-weight: 500;
+    }
+
+    .hero h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(135deg, #fff, #db762a, #e9af61);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .selector-area {
+      margin-top: 1.2rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .selector-area label {
+      font-weight: 600;
+      background: rgba(255,255,255,0.1);
+      padding: 0.5rem 1.2rem;
+      border-radius: 60px;
+      font-size: 0.9rem;
+      backdrop-filter: blur(4px);
+      color: #e4a578;
+    }
+
+    select {
+      background: #0f0f14;
+      border: 1px solid rgba(219, 118, 42, 0.3);
+      padding: 0.7rem 1.8rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      outline: none;
+      color: #ecedee;
+      transition: all 0.2s ease;
+    }
+
+    select:hover {
+      border-color: #db762a;
+      transform: scale(1.01);
+    }
+
+    /* Two column layout */
+    .two-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .left-column {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .metrics-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    .right-column {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    /* Card styling */
+    .card {
+      background: linear-gradient(145deg, #0f0f14 0%, #0b0b0e 100%);
+      border-radius: 1.8rem;
+      padding: 1.6rem 1.8rem;
+      transition: all 0.25s ease;
+      border: 1px solid rgba(255,255,255,0.05);
+      box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.3);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(219, 118, 42, 0.3);
+      box-shadow: 0 24px 40px -12px rgba(0, 0, 0, 0.4);
+    }
+
+    .card h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-left: 5px solid #db762a;
+      padding-left: 16px;
+      color: #db762a;
+    }
+
+    /* Course item with progress bar */
+    .course-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    .course-item {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 1.2rem;
+      padding: 1rem 1.2rem;
+      transition: 0.2s;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .course-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .course-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 600;
+    }
+
+    .course-info i {
+      font-size: 1.3rem;
+      color: #db762a;
+      background: rgba(219, 118, 42, 0.15);
+      padding: 8px;
+      border-radius: 50%;
+    }
+
+    .status-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 5px 16px;
+      border-radius: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #aaa;
+    }
+
+    .status-badge.completed {
+      background: rgba(219, 118, 42, 0.25);
+      color: #e9af61;
+    }
+
+    .status-badge.in-progress {
+      background: rgba(255, 255, 255, 0.08);
+      color: #aaa;
+    }
+
+    .status-badge:hover {
+      transform: scale(0.96);
+      filter: brightness(0.96);
+    }
+
+    /* Progress bar for each course */
+    .course-progress-wrapper {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .progress-bar-bg {
+      flex: 2;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      background: linear-gradient(90deg, #db762a, #e9af61);
+      width: 0%;
+      height: 100%;
+      border-radius: 20px;
+      transition: width 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+
+    .progress-percent {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #e4a578;
+      min-width: 45px;
+      text-align: right;
+    }
+
+    .score-row {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 1.2rem;
+      padding: 0.9rem 1rem;
+      margin-bottom: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-weight: 500;
+    }
+
+    .meter {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 30px;
+      height: 14px;
+      width: 100%;
+      margin: 12px 0;
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      background: linear-gradient(90deg, #db762a, #e9af61);
+      width: 0%;
+      height: 100%;
+      border-radius: 30px;
+      transition: width 0.4s ease;
+    }
+
+    .badge-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .badge {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 5px 14px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #aaa;
+    }
+
+    .badge-gold {
+      background: rgba(219, 118, 42, 0.2);
+      color: #e9af61;
+      border-left: 3px solid #db762a;
+      font-weight: 700;
+    }
+
+    .streak {
+      background: rgba(219, 118, 42, 0.15);
+      border-radius: 40px;
+      padding: 10px 16px;
+      text-align: center;
+      font-weight: 800;
+      margin: 12px 0;
+      color: #e9af61;
+    }
+
+    button {
+      background: linear-gradient(135deg, #db762a, #c86214);
+      color: white;
+      border: none;
+      border-radius: 60px;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.05);
+      box-shadow: 0 8px 18px rgba(219, 118, 42, 0.3);
+    }
+
+    .platform-tag {
+      background: rgba(219, 118, 42, 0.15);
+      padding: 6px 16px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin: 6px 6px 0 0;
+      color: #e4a578;
+    }
+
+    .fake-link {
+      color: #db762a;
+      text-decoration: none;
+      font-weight: 600;
+      margin-right: 12px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .fake-link:hover {
+      text-decoration: underline;
+      color: #e9af61;
+    }
+
+    .playlist-suggestion {
+      background: rgba(219, 118, 42, 0.1);
+      padding: 12px 16px;
+      border-radius: 1.2rem;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      border: 1px solid rgba(219, 118, 42, 0.2);
+    }
+
+    .chart-container {
+      max-height: 220px;
+      margin-top: 18px;
+    }
+
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    input[type="number"] {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(219, 118, 42, 0.3);
+      border-radius: 40px;
+      padding: 8px 14px;
+      width: 100px;
+      font-weight: 500;
+      text-align: center;
+      color: white;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.8rem;
+      color: #555;
+    }
+
+    @media (max-width: 1000px) {
+      .two-columns {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      .metrics-row {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+    }
+
+    @media (max-width: 780px) {
+      .container { padding: 1rem; }
+      .hero { padding: 1.2rem; }
+      .card { padding: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo"><i class="fas fa-chart-line"></i> Trance</div>
+      <div class="nav-links">
+        <a href="index.html" class="nav-btn"><i class="fas fa-home"></i> Home</a>
+        <a href="Communication Skills.html" class="nav-btn"><i class="fas fa-comments"></i> Communication</a>
+        <a href="Resume.html" class="nav-btn"><i class="fas fa-scroll"></i> Resume</a>
+        <a href="Tech Stack.html" class="nav-btn active"><i class="fas fa-code"></i> Tech Stack</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="hero">
+      <div class="hero-left">
+        <h1><i class="fas fa-bolt"></i> Trance · Course Progress Tracker</h1>
+        <div class="selector-area">
+          <label><i class="fas fa-compass"></i> Career Track</label>
+          <select id="careerSelect">
+            <option value="cybersecurity">🛡️ Cybersecurity</option>
+            <option value="backend">⚙️ Backend Development</option>
+            <option value="frontend">🎨 Frontend Development</option>
+            <option value="datascience">📊 Data Science</option>
+            <option value="mobile">📱 Mobile Development</option>
+            <option value="aiml">🤖 AI/ML</option>
+          </select>
+          <span style="background: rgba(219,118,42,0.15); padding: 5px 15px; border-radius: 40px; font-size: 0.8rem; color: #e4a578;"><i class="fas fa-sync-alt"></i> Live sync</span>
+        </div>
+      </div>
+      <div class="score-panel">
+        <div class="score-label">CAREER READINESS</div>
+        <div class="score-value" id="headerScoreValue">0</div>
+        <div class="score-badge" id="headerScoreBadge">IN PROGRESS</div>
+      </div>
+    </div>
+
+    <div class="two-columns">
+      <!-- LEFT COLUMN -->
+      <div class="left-column">
+        <div class="card">
+          <h3><i class="fas fa-book-open"></i> Course Progress</h3>
+          <div id="coursesResourcesContainer" class="course-list"></div>
+          <div class="playlist-suggestion">
+            <i class="fab fa-youtube"></i> <strong>Top picks:</strong> <span id="playlistSuggest"></span>
+          </div>
+        </div>
+
+        <div class="metrics-row">
+          <div class="card">
+            <h3><i class="fas fa-chart-line"></i> Goals & Radar Analysis</h3>
+            <div class="flex-between" style="margin-bottom: 12px;">
+              <span><i class="fas fa-flag-checkered"></i> Course target (2 months):</span>
+              <input type="number" id="targetCourses" value="3" min="0" max="20">
+            </div>
+            <button id="setTargetBtn" style="margin-bottom: 12px; width: 100%;">🎯 Set Goal & Track</button>
+            <div style="background: rgba(219,118,42,0.1); border-radius: 60px; padding: 6px 12px; text-align:center; margin-bottom: 12px; color: #e4a578;" id="goalMessage">
+              Goal: Complete 3 courses
+            </div>
+            <div class="chart-container">
+              <canvas id="radarChart" width="300" height="200"></canvas>
+            </div>
+            <div class="flex-between" style="margin-top: 12px;">
+              <span><i class="fas fa-chart-line"></i> Weekly growth</span>
+              <strong style="color: #e9af61;">+<span id="weeklyGrowth">12</span> pts</strong>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3><i class="fas fa-chart-simple"></i> Performance Metrics</h3>
+            <div class="score-row"><span>📘 Core Language Mastery</span> <strong><span id="langScoreSpan">0</span>%</strong></div>
+            <div class="score-row"><span>⚙️ Technical & Platform Score</span> <strong><span id="techScoreSpan">0</span>%</strong></div>
+            <div class="flex-between" style="margin: 10px 0 6px 0;">
+              <span><i class="fas fa-bullseye"></i> Career Readiness</span>
+              <strong style="color: #e9af61;" id="overallSpan">0</strong><span>%</span>
+            </div>
+            <div class="meter"><div class="meter-fill" id="readinessMeter"></div></div>
+            <div id="badgeArea" class="badge-container"></div>
+            <div class="streak" id="streakDisplay"><i class="fas fa-fire"></i> Streak: 0 days</div>
+            <button id="incrementStreakBtn"><i class="fas fa-calendar-plus"></i> +1 Day Practice</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="right-column">
+        <div class="card">
+          <h3><i class="fas fa-laptop-code"></i> Practice Arenas</h3>
+          <div id="platformsContainer"></div>
+        </div>
+
+        <div class="card">
+          <h3><i class="fas fa-medal"></i> Milestones & Achievements</h3>
+          <div id="milestoneList" style="margin-bottom: 20px;"><p style="color: #888;">✨ Unlock by completing courses & challenges</p></div>
+          <button id="simulateLeetCodeBadge" style="background: linear-gradient(135deg, #c7653d, #db762a);"><i class="fas fa-trophy"></i> Simulate "100 LeetCode" Badge</button>
+          <div style="margin-top: 18px; background: rgba(219,118,42,0.1); border-radius: 1.2rem; padding: 12px; font-size:0.8rem; color: #e4a578;">
+            <i class="fas fa-lightbulb"></i> <strong>Pro tip:</strong> Complete a course → +40% progress per course!
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><i class="fas fa-rocket"></i> Growth Accelerator</h3>
+          <p style="color: #aaa; line-height: 1.6;">✔️ Each completed course adds <strong style="color: #e9af61;">+40%</strong> to its individual progress bar.<br>
+          ✔️ Maintain daily streak for consistency multiplier.<br>
+          ✔️ Radar chart shows strengths vs growth areas.</p>
+        </div>
+      </div>
+    </div>
+    <footer>🔥 Each course starts at 0% progress. Mark as Completed → instantly jumps to 40% progress.</footer>
+  </div>
+
+  <script>
+    const careerData = {
+      cybersecurity: { courses: ["Python for Cybersecurity", "C for Pentesting", "Bash Automation", "Assembly & Exploitation", "Network Security Fundamentals", "CompTIA Security+ Prep", "Ethical Hacking (CEH)", "Web Application Exploitation", "Digital Forensics"], playlists: "Cybersecurity Deep Dive | TryHackMe Paths", platforms: ["HackTheBox", "TryHackMe", "CyberChef", "PicoCTF"] },
+      backend: { courses: ["Java Spring Boot", "Python Backend (Django)", "Node.js Microservices", "Go API Design", "Advanced SQL", "GraphQL & REST APIs", "Docker & Kubernetes Mastery", "System Design Architecture", "Event-Driven with Kafka"], playlists: "Backend Engineering Mastery", platforms: ["LeetCode", "Codilo", "HackerRank", "PostgreSQL Exercises"] },
+      frontend: { courses: ["Modern JavaScript", "TypeScript Deep Dive", "HTML5/CSS3 Mastery", "React Ecosystem", "Next.js Full-Stack", "Vue.js Composition API", "Advanced CSS Animations", "Web Accessibility (a11y)", "Performance Optimization"], playlists: "Frontend 2025: Interactive UI", platforms: ["Frontend Mentor", "CodePen Challenges", "UI.dev"] },
+      datascience: { courses: ["Data Analysis with Python", "R for Data Science", "Julia for High Performance", "SQL Analytics", "Probability & Statistics", "Data Visualization (Tableau)", "Big Data with Apache Spark", "Feature Engineering", "A/B Testing"], playlists: "Data Science & Visualization", platforms: ["Kaggle", "DataCamp", "DrivenData", "BigQuery"] },
+      mobile: { courses: ["SwiftUI & iOS", "Kotlin Multiplatform", "Flutter Complete", "React Native Foundations", "Mobile UI/UX Principles", "Advanced Android Architecture", "iOS App Deployment & CI/CD", "Reactive Programming"], playlists: "Mobile Dev 2025", platforms: ["Raywenderlich", "Google Codelabs", "DartPad Challenges"] },
+      aiml: { courses: ["ML Specialization", "PyTorch/TensorFlow", "C++ for AI", "Computer Vision", "Natural Language Processing (NLP)", "Deep Learning Concepts", "Building LLMs from Scratch", "Reinforcement Learning", "Generative AI Systems"], playlists: "AI/ML Engineering Track", platforms: ["LeetCode ML", "Papers With Code", "Kaggle", "Hugging Face"] }
+    };
+
+    const langScoresMap = {
+      cybersecurity: { "Python":72, "C":58, "Bash":44, "Assembly":32 },
+      backend: { "Java":68, "Python":82, "Node.js":63, "Go":48, "SQL":71 },
+      frontend: { "JavaScript":86, "TypeScript":74, "HTML":92, "CSS":88, "React":70 },
+      datascience: { "Python":79, "R":62, "Julia":34, "SQL":68 },
+      mobile: { "Swift":64, "Kotlin":68, "Dart (Flutter)":58 },
+      aiml: { "Python":88, "R":54, "C++":49, "TensorFlow/PyTorch":68 }
+    };
+
+    let currentCareer = "cybersecurity";
+    let courseStatus = {};
+    let courseProgress = {};
+    let streakDays = 0;
+    let targetCourses = 3;
+    let leetCodeBadgeUnlocked = false;
+    let radarChartInstance = null;
+
+    const careerSelect = document.getElementById("careerSelect");
+    const coursesResourcesDiv = document.getElementById("coursesResourcesContainer");
+    const playlistSpan = document.getElementById("playlistSuggest");
+    const platformsContainer = document.getElementById("platformsContainer");
+    const langScoreSpan = document.getElementById("langScoreSpan");
+    const techScoreSpan = document.getElementById("techScoreSpan");
+    const overallSpan = document.getElementById("overallSpan");
+    const readinessMeter = document.getElementById("readinessMeter");
+    const badgeArea = document.getElementById("badgeArea");
+    const streakDisplay = document.getElementById("streakDisplay");
+    const milestoneListDiv = document.getElementById("milestoneList");
+    const incrementBtn = document.getElementById("incrementStreakBtn");
+    const setTargetBtn = document.getElementById("setTargetBtn");
+    const targetInput = document.getElementById("targetCourses");
+    const goalMsg = document.getElementById("goalMessage");
+    const weeklySpan = document.getElementById("weeklyGrowth");
+
+    function getLanguageMastery() {
+      const scores = langScoresMap[currentCareer];
+      if (!scores) return 0;
+      let total = 0, count = 0;
+      for (let lang in scores) { total += scores[lang]; count++; }
+      return count === 0 ? 0 : total / count;
+    }
+
+    function getCompletedCount() {
+      const courses = careerData[currentCareer].courses;
+      let completed = 0;
+      courses.forEach(c => { if (courseStatus[c] === 'completed') completed++; });
+      return completed;
+    }
+
+    function updateCourseProgress(courseName, isCompleted) {
+      if (isCompleted) courseProgress[courseName] = 40;
+      else courseProgress[courseName] = 0;
+    }
+
+    function initAllCourseProgress() {
+      const courses = careerData[currentCareer].courses;
+      courses.forEach(course => {
+        if (courseProgress[course] === undefined) {
+          courseProgress[course] = courseStatus[course] === 'completed' ? 40 : 0;
+        }
+      });
+    }
+
+    function computeTechAndOverall() {
+      const langPercent = getLanguageMastery();
+      langScoreSpan.innerText = Math.floor(langPercent);
+      const coursesList = careerData[currentCareer].courses;
+      const completedCount = getCompletedCount();
+      const courseCompletion = coursesList.length ? (completedCount / coursesList.length) * 100 : 0;
+      let badgeBonus = leetCodeBadgeUnlocked ? 25 : 0;
+      let streakBonus = Math.min(25, streakDays);
+      let techScore = Math.min(100, (courseCompletion * 0.45) + badgeBonus + streakBonus + (langPercent * 0.2));
+      techScoreSpan.innerText = Math.floor(techScore);
+      let overallRound = (langPercent * 0.55 + techScore * 0.45);
+      let overallRounded = Math.floor(overallRound);
+      overallSpan.innerText = overallRounded;
+      readinessMeter.style.width = overallRounded + "%";
+      
+      const headerScore = document.getElementById("headerScoreValue");
+      if (headerScore) headerScore.innerText = overallRounded + "%";
+      const headerBadge = document.getElementById("headerScoreBadge");
+      if (headerBadge) {
+          if (overallRounded >= 80) headerBadge.innerText = "READY";
+          else if (overallRounded >= 50) headerBadge.innerText = "ON TRACK";
+          else headerBadge.innerText = "IN PROGRESS";
+      }
+
+      return { overallRounded, completedCount, courseCompletion, coursesList };
+    }
+
+    function updateBadgesAndMilestones(overallRounded, completedCount, totalCourses, langPercent) {
+      let badges = [];
+      if (langPercent >= 70) badges.push("🏅 Language Expert");
+      if (streakDays >= 7) badges.push("🔥 Streak Master (7d)");
+      if (leetCodeBadgeUnlocked) badges.push("💯 LeetCode 100 Solved");
+      if (completedCount === totalCourses) badges.push("📚 Course Conqueror");
+      if (overallRounded >= 80) badges.push("⭐ Career Ready Elite");
+      badgeArea.innerHTML = badges.length ? badges.map(b => `<div class="badge badge-gold"><i class="fas fa-award"></i> ${b}</div>`).join('') : "<div class='badge'>✨ Unlock by toggling courses & practice</div>";
+      
+      let milestonesHtml = "";
+      if (leetCodeBadgeUnlocked) milestonesHtml += "<li style='color: #e9af61;'>✅ '100 LeetCode problems' badge claimed</li>";
+      if (streakDays >= 7) milestonesHtml += "<li style='color: #e9af61;'>✅ 7-day streak badge unlocked</li>";
+      if (completedCount === totalCourses) milestonesHtml += "<li style='color: #e9af61;'>✅ All courses completed! 🎉</li>";
+      if (milestonesHtml === "") milestonesHtml = "<li style='color: #888;'>🌟 Toggle courses to 'Completed' & maintain streak</li>";
+      milestoneListDiv.innerHTML = `<ul style="margin-left:1rem; list-style-type: none; padding-left:0;">${milestonesHtml}</ul>`;
+      
+      if (targetCourses > 0 && completedCount >= targetCourses) goalMsg.innerHTML = `🎉 GOAL ACHIEVED! ${completedCount}/${targetCourses} courses completed 🎉`;
+      else goalMsg.innerHTML = `🎯 Goal: ${targetCourses} courses in 2 months → ${completedCount}/${targetCourses} done`;
+    }
+
+    function renderRadar() {
+      const ctx = document.getElementById('radarChart').getContext('2d');
+      const langPercent = getLanguageMastery();
+      const coursesArr = careerData[currentCareer].courses;
+      const completedCount = getCompletedCount();
+      const courseRate = coursesArr.length ? (completedCount / coursesArr.length) * 100 : 0;
+      let platformActivity = (leetCodeBadgeUnlocked ? 80 : 45) + (streakDays > 10 ? 15 : 0);
+      platformActivity = Math.min(100, platformActivity);
+      let consistency = Math.min(100, streakDays * 5);
+      let integrated = (langPercent * 0.4 + courseRate * 0.3 + platformActivity * 0.2 + consistency * 0.1);
+      const data = [langPercent, courseRate, platformActivity, consistency, integrated];
+      const labels = ["Language", "Courses", "Platforms", "Streak", "Readiness"];
+      if (radarChartInstance) radarChartInstance.destroy();
+      radarChartInstance = new Chart(ctx, {
+        type: 'radar',
+        data: { labels, datasets: [{ label: 'Current Profile', data, backgroundColor: 'rgba(219,118,42,0.25)', borderColor: '#db762a', borderWidth: 2.5, pointBackgroundColor: '#db762a', pointBorderColor: '#fff' }] },
+        options: { responsive: true, maintainAspectRatio: true, scales: { r: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: '#888' }, grid: { color: 'rgba(255,255,255,0.1)' } } } }
+      });
+      let growth = Math.floor(Math.random() * 18) + 6;
+      weeklySpan.innerText = growth;
+    }
+
+    function fullRefresh() {
+      const courses = careerData[currentCareer].courses;
+      courses.forEach(c => { 
+        if (courseStatus[c] === undefined) courseStatus[c] = 'in-progress';
+        updateCourseProgress(c, courseStatus[c] === 'completed');
+      });
+      initAllCourseProgress();
+      
+      let html = `<div class="course-list">`;
+      courses.forEach(course => {
+        const isCompleted = courseStatus[course] === 'completed';
+        const statusClass = isCompleted ? 'completed' : 'in-progress';
+        const statusText = isCompleted ? 'Completed' : 'In Progress';
+        const progressValue = courseProgress[course] || 0;
+        html += `<div class="course-item"><div class="course-header"><div class="course-info"><i class="fab fa-coursera"></i><span>${course}</span></div><div class="status-badge ${statusClass}" data-course="${course}"><i class="fas ${isCompleted ? 'fa-check-circle' : 'fa-hourglass-half'}"></i> ${statusText}</div></div><div class="course-progress-wrapper"><div class="progress-bar-bg"><div class="progress-fill" style="width: ${progressValue}%;"></div></div><div class="progress-percent">${progressValue}%</div></div></div>`;
+      });
+      html += `</div><div style="margin-top: 10px; font-size:0.7rem; background: rgba(219,118,42,0.1); padding:6px 12px; border-radius:30px; color: #e4a578;"><i class="fas fa-info-circle"></i> Each completed course = 40% progress</div>`;
+      coursesResourcesDiv.innerHTML = html;
+      
+      document.querySelectorAll('.status-badge').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          let courseName = el.getAttribute('data-course');
+          const newStatus = courseStatus[courseName] === 'completed' ? 'in-progress' : 'completed';
+          courseStatus[courseName] = newStatus;
+          updateCourseProgress(courseName, newStatus === 'completed');
+          fullRefresh();
+          saveToLocal();
+        });
+      });
+      
+      playlistSpan.innerText = careerData[currentCareer].playlists;
+      let platformsHtml = `<div class="badge-container">`;
+      careerData[currentCareer].platforms.forEach(p => { platformsHtml += `<span class="platform-tag"><i class="fas fa-gamepad"></i> ${p}</span>`; });
+      platformsHtml += `</div><div><small>🔗 Explore: `;
+      careerData[currentCareer].platforms.forEach(p => { platformsHtml += `<a class="fake-link" data-p="${p}">${p}</a> `; });
+      platformsHtml += `</small></div>`;
+      platformsContainer.innerHTML = platformsHtml;
+      document.querySelectorAll('.fake-link').forEach(link => {
+        link.addEventListener('click', (e) => { e.preventDefault(); alert(`🌐 Open ${link.getAttribute('data-p')} to level up!`); });
+      });
+      
+      const { overallRounded, completedCount, coursesList } = computeTechAndOverall();
+      const langPercent = getLanguageMastery();
+      updateBadgesAndMilestones(overallRounded, completedCount, coursesList.length, langPercent);
+      renderRadar();
+      saveToLocal();
+    }
+    
+    function saveToLocal() {
+      localStorage.setItem("careerForgeData", JSON.stringify({ courseStatus, courseProgress, streakDays, leetCodeBadgeUnlocked, targetCourses, currentCareer }));
+    }
+    
+    function loadFromLocal() {
+      const raw = localStorage.getItem("careerForgeData");
+      if (raw) {
+        try {
+          const data = JSON.parse(raw);
+          courseStatus = data.courseStatus || {};
+          courseProgress = data.courseProgress || {};
+          streakDays = data.streakDays || 0;
+          leetCodeBadgeUnlocked = data.leetCodeBadgeUnlocked || false;
+          targetCourses = data.targetCourses || 3;
+          if (data.currentCareer) { currentCareer = data.currentCareer; careerSelect.value = currentCareer; }
+        } catch(e) {}
+      }
+      streakDisplay.innerText = `🔥 Streak: ${streakDays} days`;
+      targetInput.value = targetCourses;
+      fullRefresh();
+    }
+    
+    careerSelect.addEventListener("change", (e) => { currentCareer = e.target.value; fullRefresh(); save

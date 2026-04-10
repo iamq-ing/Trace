@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Trance | AI Resume Scoring Engine</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0c 0%, #0f0f14 100%);
+            font-family: 'Inter', sans-serif;
+            color: #ecedee;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1f;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #db762a;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff8c42;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background: rgba(10, 10, 12, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(219, 118, 42, 0.2);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #db762a, #e9af61);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .logo i {
+            color: #db762a;
+            background: none;
+            -webkit-background-clip: unset;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(219, 118, 42, 0.3);
+            padding: 0.6rem 1.2rem;
+            border-radius: 40px;
+            color: #ecedee;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn:hover {
+            background: linear-gradient(135deg, #db762a, #c86214);
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(219, 118, 42, 0.3);
+            color: white;
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, #db762a, #c86214);
+            border-color: transparent;
+            color: white;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Premium Header */
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            background: linear-gradient(125deg, #16161a, #0b0b0e, #111116);
+            border-radius: 2rem;
+            padding: 1.8rem 2.2rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(219, 118, 42, 0.2);
+        }
+
+        .logo-area h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #db762a, #e9af61, #db762a);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-area p {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 0.25rem;
+        }
+
+        .score-panel {
+            background: rgba(17, 18, 21, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 28px;
+            padding: 0.6rem 2rem;
+            border: 1px solid rgba(219, 118, 42, 0.3);
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .score-panel:hover {
+            transform: translateY(-2px);
+            border-color: #db762a;
+        }
+
+        .score-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #db762a;
+            font-weight: 600;
+        }
+
+        .score-value {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1;
+            background: linear-gradient(135deg, #fff, #db762a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .score-badge {
+            font-size: 0.7rem;
+            background: rgba(219, 118, 42, 0.15);
+            padding: 4px 12px;
+            border-radius: 40px;
+            margin-top: 6px;
+            display: inline-block;
+            font-weight: 500;
+        }
+
+        /* Auto-save indicator */
+        .auto-save-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 2rem;
+        }
+
+        .auto-save-indicator {
+            font-size: 0.75rem;
+            color: #db762a;
+            background: rgba(219, 118, 42, 0.1);
+            padding: 6px 14px;
+            border-radius: 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(4px);
+        }
+
+        /* Zig-zag Grid Layout */
+        .zigzag-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.8rem;
+        }
+
+        .grid-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.8rem;
+        }
+
+        .grid-row>* {
+            flex: 1;
+            min-width: 320px;
+        }
+
+        /* Premium Card Design */
+        .premium-card {
+            background: linear-gradient(145deg, #0f0f14 0%, #0b0b0e 100%);
+            border-radius: 32px;
+            padding: 1.6rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .premium-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #db762a, #e9af61, transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .premium-card:hover {
+            border-color: rgba(219, 118, 42, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .premium-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, rgba(219, 118, 42, 0.2), rgba(233, 175, 97, 0.1));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: #db762a;
+        }
+
+        .card-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+
+        .card-header p {
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        /* Form Elements */
+        .input-group {
+            margin-bottom: 1.2rem;
+        }
+
+        label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            display: block;
+            color: #aaa;
+            letter-spacing: 0.3px;
+        }
+
+        label i {
+            margin-right: 6px;
+            font-size: 0.7rem;
+            color: #db762a;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            background: rgba(26, 26, 31, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 0.8rem 1rem;
+            color: #f0f0f0;
+            font-size: 0.9rem;
+            transition: all 0.25s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #db762a;
+            box-shadow: 0 0 0 3px rgba(219, 118, 42, 0.15);
+            background: #202026;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Tag Input */
+        .tag-input-wrapper {
+            background: rgba(26, 26, 31, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 0.6rem;
+            transition: all 0.25s ease;
+        }
+
+        .tag-input-wrapper:focus-within {
+            border-color: #db762a;
+            box-shadow: 0 0 0 3px rgba(219, 118, 42, 0.15);
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .tag {
+            background: linear-gradient(135deg, rgba(219, 118, 42, 0.2), rgba(219, 118, 42, 0.05));
+            color: #e4a578;
+            padding: 5px 12px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(219, 118, 42, 0.3);
+            transition: all 0.2s;
+        }
+
+        .tag:hover {
+            background: rgba(219, 118, 42, 0.3);
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            font-size: 0.7rem;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .tag-remove:hover {
+            opacity: 1;
+        }
+
+        .tag-input-flex {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .tag-input-field {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 8px 4px;
+            color: white;
+            outline: none;
+        }
+
+        .btn-add-tag {
+            background: rgba(219, 118, 42, 0.2);
+            border: 1px solid rgba(219, 118, 42, 0.3);
+            border-radius: 40px;
+            padding: 6px 14px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #db762a;
+        }
+
+        .btn-add-tag:hover {
+            background: #db762a;
+            color: black;
+        }
+
+        /* Dynamic Entry */
+        .dynamic-entry {
+            background: rgba(19, 19, 23, 0.6);
+            border-radius: 20px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 3px solid #db762a;
+            transition: all 0.2s;
+        }
+
+        .dynamic-entry:hover {
+            background: rgba(19, 19, 23, 0.9);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #db762a, #c86214);
+            border: none;
+            border-radius: 40px;
+            padding: 10px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(219, 118, 42, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(44, 44, 52, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 40px;
+            padding: 8px 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #ddd;
+            font-size: 0.8rem;
+        }
+
+        .btn-secondary:hover {
+            background: #2c2c34;
+            color: #db762a;
+        }
+
+        .remove-btn {
+            background: rgba(44, 44, 52, 0.6);
+            border: none;
+            border-radius: 30px;
+            padding: 5px 12px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #ff9f6e;
+        }
+
+        .remove-btn:hover {
+            background: #ff4444;
+            color: white;
+        }
+
+        /* Toast */
+        .toast-message {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #db762a, #e9af61);
+            color: #0a0a0a;
+            padding: 14px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            z-index: 1000;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Programming Languages Grid */
+        .langs-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 4px;
+        }
+
+        .lang-tag {
+            background: rgba(44, 44, 52, 0.6);
+            color: #ccc;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .lang-tag:hover {
+            background: rgba(219, 118, 42, 0.3);
+            border-color: #db762a;
+            transform: scale(1.02);
+        }
+
+        .lang-tag.selected {
+            background: linear-gradient(135deg, #db762a, #c86214);
+            color: white;
+            border-color: #db762a;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .score-value {
+                font-size: 2.5rem;
+            }
+
+            .premium-card {
+                padding: 1.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i> Trance
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-btn">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="Communication Skills.html" class="nav-btn">
+                    <i class="fas fa-comments"></i> Communication
+                </a>
+                <a href="Resume.html" class="nav-btn active">
+                    <i class="fas fa-scroll"></i> Resume
+                </a>
+                <a href="Tech Stack.html" class="nav-btn">
+                    <i class="fas fa-code"></i> Tech Stack
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-area">
+                <h1><i class="fas fa-scroll" style="color: #db762a; margin-right: 8px;"></i>Resume</h1>
+                <p>AI-Powered Resume Scoring Engine · Strict Industry Standards</p>
+            </div>
+            <div class="score-panel">
+                <div class="score-label">TOTAL SCORE</div>
+                <div class="score-value" id="totalScoreDisplay">0</div>
+                <div class="score-badge" id="scoreBandLabel">—</div>
+            </div>
+        </div>
+
+        <div class="auto-save-bar">
+            <div class="auto-save-indicator">
+                <i class="fas fa-save"></i> Auto-saving to browser storage
+            </div>
+        </div>
+
+        <!-- Zig-Zag Grid -->
+        <div class="zigzag-grid">
+            <!-- Row 1: Personal Details + Programming Languages -->
+            <div class="grid-row">
+                <div class="premium-card">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-user-circle"></i></div>
+                        <div>
+                            <h3>Personal Details</h3>
+                            <p>Your identity & professional summary</p>
+                        </div>
+                    </div>
+                    <div class="input-group"><label><i class="fas fa-user"></i>Full Name *</label><input type="text"
+                            id="fullName" placeholder="Alex Johnson"></div>
+                    <div class="input-group"><label><i class="fas fa-calendar"></i>Age</label><input type="number"
+                            id="age" placeholder="24"></div>
+                    <div class="input-group"><label><i class="fas fa-envelope"></i>Email *</label><input type="email"
+                            id="email" placeholder="alex@example.com"></div>
+                    <div class="input-group"><label><i class="fas fa-phone"></i>Phone</label><input type="tel"
+                            id="phone" placeholder="+1 234 567 890"></div>
+                    <div class="input-group"><label><i class="fab fa-linkedin"></i>LinkedIn / Portfolio</label><input
+                            type="url" id="portfolioUrl" placeholder="https://linkedin.com/in/..."></div>
+                    <div class="input-group"><label><i class="fas fa-pen-fancy"></i>Professional
+                            Summary</label><textarea id="summary" maxlength="900"
+                            placeholder="Detail-oriented developer with 3 years of experience..."></textarea></div>
+                </div>
+                <div class="premium-card">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-code"></i></div>
+                        <div>
+                            <h3>Programming Languages</h3>
+                            <p>Select your tech stack proficiency</p>
+                        </div>
+                    </div>
+                    <div class="langs-grid" id="programmingLangsGrid">
+                        <!-- Languages will be populated here -->
+                    </div>
+                    <div class="input-group" style="margin-top: 1rem;">
+                        <label><i class="fas fa-plus-circle"></i>Add Custom Language</label>
+                        <div class="tag-input-flex">
+                            <input type="text" id="customLangInput" class="tag-input-field"
+                                placeholder="e.g., Rust, Dart, Kotlin"
+                                style="background: rgba(26,26,31,0.8); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:0.8rem;">
+                            <button class="btn-add-tag" id="addCustomLangBtn"><i class="fas fa-plus"></i> Add</button>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.7rem; color: #666; margin-top: 0.8rem;"><i class="fas fa-info-circle"></i>
+                        Selected languages contribute to your skills score</p>
+                </div>
+            </div>
+
+            <!-- Row 2: Specialization + Projects -->
+            <div class="grid-row">
+                <div class="premium-card">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-microchip"></i></div>
+                        <div>
+                            <h3>Specialization</h3>
+                            <p>Domain & technical stack</p>
+                        </div>
+                    </div>
+                    <div class="input-group"><label><i class="fas fa-bullseye"></i>Primary Domain</label><input
+                            type="text" id="primaryDomain" placeholder="AI, Web Dev, Core ECE"></div>
+                    <div class="input-group"><label><i class="fas fa-code-branch"></i>Additional Skills</label>
+                        <div class="tag-input-wrapper">
+                            <div class="tags-container" id="skillsTags"></div>
+                            <div class="tag-input-flex">
+                                <input type="text" id="skillInput" class="tag-input-field"
+                                    placeholder="Type skill & press Enter">
+                                <button type="button" class="btn-add-tag" id="addSkillBtn"><i class="fas fa-plus"></i>
+                                    Add</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group"><label><i class="fas fa-tools"></i>Tools/Technologies</label><input
+                            type="text" id="tools" placeholder="React, Node, Docker, Figma, AWS"></div>
+                </div>
+                <div class="premium-card">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-rocket"></i></div>
+                        <div>
+                            <h3>Projects</h3>
+                            <p>Real-world experience</p>
+                        </div>
+                    </div>
+                    <div id="projectsList"></div>
+                    <button class="btn-secondary" id="addProjectBtn" style="width:100%; margin-top: 0.5rem;"><i
+                            class="fas fa-plus-circle"></i> Add Project</button>
+                </div>
+            </div>
+
+            <!-- Row 3: Internships + Certifications -->
+            <div class="grid-row">
+                <div class="premium-card">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-briefcase"></i></div>
+                        <div>
+                            <h3>Internships / Experience</h3>
+                            <p>Professional journey</p>
+                        </div>
+                    </div>
+                    <div id="internsList"></div>
+                    <button class="btn-secondary" id="addInternBtn" style="width:100%; margin-top: 0.5rem;"><i
+                            class="fas fa-plus-circle"></i> Add Experience</button>
+                </div>
+                <div class="premium-card">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-certificate"></i></div>
+                        <div>
+                            <h3>Certifications</h3>
+                            <p>Verified credentials</p>
+                        </div>
+                    </div>
+                    <div id="certsList"></div>
+                    <button class="btn-secondary" id="addCertBtn" style="width:100%; margin-top: 0.5rem;"><i
+                            class="fas fa-plus-circle"></i> Add Certification</button>
+                </div>
+            </div>
+
+            <!-- Row 4: Achievements + Data Management -->
+            <div class="grid-row">
+                <div class="premium-card">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-trophy"></i></div>
+                        <div>
+                            <h3>Achievements & Extras</h3>
+                            <p>Stand out from the crowd</p>
+                        </div>
+                    </div>
+                    <div class="input-group"><label><i class="fas fa-medal"></i>Hackathons / Awards</label><textarea
+                            id="awards" placeholder="Winner at HackMIT 2023, 2nd place AI Hackathon"></textarea></div>
+                    <div class="input-group"><label><i class="fas fa-chart-simple"></i>Rankings /
+                            Positions</label><input type="text" id="rankings" placeholder="Top 10 national level"></div>
+                    <div class="input-group"><label><i class="fab fa-github"></i>Open Source Contributions</label><input
+                            type="text" id="opensource" placeholder="PR merged in TensorFlow, link"></div>
+                    <div class="input-group"><label><i class="fas fa-book"></i>Publications</label><textarea
+                            id="publications" placeholder="IEEE paper on LLMs"></textarea></div>
+                    <div class="input-group"><label><i class="fas fa-users"></i>Leadership Roles</label><input
+                            type="text" id="leadership" placeholder="Tech Lead at GDSC"></div>
+                </div>
+                <div class="premium-card">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-database"></i></div>
+                        <div>
+                            <h3>Data Management</h3>
+                            <p>Control your data</p>
+                        </div>
+                    </div>
+                    <button class="btn-primary" id="clearAllBtn"
+                        style="width:100%; background: linear-gradient(135deg, #ff4444, #cc0000);"><i
+                            class="fas fa-trash-alt"></i> Clear All Data</button>
+                    <p style="font-size: 0.7rem; color: #555; text-align: center; margin-top: 1rem;"><i
+                            class="fas fa-shield-alt"></i> Your data stays private in your browser</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Predefined programming languages
+        const defaultLanguages = [
+            "Java", "Python", "Node.js", "Go", "SQL", "JavaScript", "TypeScript",
+            "HTML", "CSS", "React", "R", "Julia", "C", "Bash", "Assembly",
+            "Swift", "Kotlin", "Dart", "C++", "Ruby", "PHP", "Perl", "Scala",
+            "Haskell", "Lua", "MATLAB", "Groovy", "Objective-C", "Rust"
+        ];
+
+        let selectedLanguages = [];
+        let skills = [], projects = [], internships = [], certifications = [];
+        const STORAGE_KEY = 'resume_forge_pro';
+
+        function showToast(msg, isErr = false) {
+            const toast = document.createElement('div');
+            toast.className = 'toast-message';
+            toast.innerHTML = `<i class="fas ${isErr ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${msg}`;
+            toast.style.background = isErr ? '#ff4444' : 'linear-gradient(135deg, #db762a, #e9af61)';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2800);
+        }
+
+        function saveToLocalStorage() {
+            const state = {
+                selectedLanguages, skills, projects, internships, certifications,
+                fullName: document.getElementById('fullName').value,
+                age: document.getElementById('age').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                portfolioUrl: document.getElementById('portfolioUrl').value,
+                summary: document.getElementById('summary').value,
+                primaryDomain: document.getElementById('primaryDomain').value,
+                tools: document.getElementById('tools').value,
+                awards: document.getElementById('awards').value,
+                rankings: document.getElementById('rankings').value,
+                opensource: document.getElementById('opensource').value,
+                publications: document.getElementById('publications').value,
+                leadership: document.getElementById('leadership').value
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (!saved) return false;
+            try {
+                const data = JSON.parse(saved);
+                selectedLanguages = data.selectedLanguages || [];
+                skills = data.skills || [];
+                projects = data.projects || [];
+                internships = data.internships || [];
+                certifications = data.certifications || [];
+                const fields = ['fullName', 'age', 'email', 'phone', 'portfolioUrl', 'summary', 'primaryDomain', 'tools', 'awards', 'rankings', 'opensource', 'publications', 'leadership'];
+                fields.forEach(f => { if (data[f] !== undefined) document.getElementById(f).value = data[f]; });
+                renderAll();
+                showToast('Resume loaded from storage');
+                return true;
+            } catch (e) { return false; }
+        }
+
+        function clearAll() {
+            if (confirm('⚠️ ERASE ALL DATA? This action cannot be undone.')) {
+                localStorage.removeItem(STORAGE_KEY);
+                selectedLanguages = [];
+                skills = []; projects = []; internships = []; certifications = [];
+                document.querySelectorAll('input, textarea').forEach(el => { if (el.id !== 'skillInput' && el.id !== 'customLangInput') el.value = ''; });
+                renderAll();
+                updateScore();
+                showToast('All data cleared');
+            }
+        }
+
+        let saveTimer;
+        function autoSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveToLocalStorage, 400); }
+
+        function renderAll() {
+            renderLanguageGrid();
+            renderSkills();
+            renderProjects();
+            renderInternships();
+            renderCerts();
+            updateScore();
+            autoSave();
+        }
+
+        function renderLanguageGrid() {
+            const container = document.getElementById('programmingLangsGrid');
+            container.innerHTML = defaultLanguages.map(lang => `
+            <div class="lang-tag ${selectedLanguages.includes(lang) ? 'selected' : ''}" data-lang="${lang}">
+                ${lang}
+            </div>
+        `).join('');
+
+            // Add click handlers
+            document.querySelectorAll('.lang-tag').forEach(tag => {
+                tag.onclick = () => {
+                    const lang = tag.dataset.lang;
+                    if (selectedLanguages.includes(lang)) {
+                        selectedLanguages = selectedLanguages.filter(l => l !== lang);
+                    } else {
+                        selectedLanguages.push(lang);
+                    }
+                    renderLanguageGrid();
+                    updateScore();
+                    autoSave();
+                };
+            });
+        }
+
+        function addCustomLanguage() {
+            const input = document.getElementById('customLangInput');
+            const newLang = input.value.trim();
+            if (newLang && !defaultLanguages.includes(newLang) && !selectedLanguages.includes(newLang)) {
+                selectedLanguages.push(newLang);
+                input.value = '';
+                renderLanguageGrid();
+                updateScore();
+                autoSave();
+                showToast(`Added ${newLang} to your languages`);
+            } else if (newLang && selectedLanguages.includes(newLang)) {
+                showToast('Language already selected', true);
+            } else if (newLang && defaultLanguages.includes(newLang)) {
+                showToast('Click on the language tag to select it', true);
+            }
+        }
+
+        function renderSkills() {
+            const container = document.getElementById('skillsTags');
+            container.innerHTML = skills.map((s, i) => `<span class="tag">${escapeHtml(s)} <i class="fas fa-times-circle tag-remove" data-idx="${i}"></i></span>`).join('');
+            document.querySelectorAll('.tag-remove').forEach(btn => btn.onclick = (e) => { skills.splice(parseInt(btn.dataset.idx), 1); renderAll(); });
+        }
+
+        function renderProjects() {
+            const container = document.getElementById('projectsList');
+            container.innerHTML = projects.map((p, idx) => `
+            <div class="dynamic-entry">
+                <div class="input-group"><label>Title</label><input class="proj-title" value="${escapeHtml(p.title)}" data-idx="${idx}" data-field="title"></div>
+                <div class="input-group"><label>Description</label><textarea class="proj-desc" data-idx="${idx}" data-field="desc">${escapeHtml(p.desc)}</textarea></div>
+                <div class="input-group"><label>Tech Stack</label><input class="proj-tech" value="${escapeHtml(p.tech)}" data-idx="${idx}" data-field="tech"></div>
+                <div class="input-group"><label>GitHub/Live Link</label><input class="proj-link" value="${escapeHtml(p.link)}" data-idx="${idx}" data-field="link"></div>
+                <div class="input-group"><label>Role</label><select class="proj-role" data-idx="${idx}" data-field="role"><option ${p.role === 'Lead' ? 'selected' : ''}>Lead</option><option ${p.role === 'Contributor' ? 'selected' : ''}>Contributor</option><option ${p.role === 'Solo' ? 'selected' : ''}>Solo</option></select></div>
+                <button class="remove-btn" data-idx="${idx}" data-type="project"><i class="fas fa-trash"></i> Remove</button>
+            </div>`).join('');
+            attachProjEvents();
+        }
+
+        function attachProjEvents() {
+            document.querySelectorAll('.proj-title, .proj-desc, .proj-tech, .proj-link, .proj-role').forEach(el => {
+                el.addEventListener('input', function () { let idx = this.dataset.idx; if (projects[idx]) projects[idx][this.dataset.field] = this.value; renderAll(); });
+                el.addEventListener('change', function () { let idx = this.dataset.idx; if (projects[idx]) projects[idx][this.dataset.field] = this.value; renderAll(); });
+            });
+            document.querySelectorAll('.remove-btn[data-type="project"]').forEach(btn => btn.onclick = () => { projects.splice(parseInt(btn.dataset.idx), 1); renderAll(); });
+        }
+
+        function renderInternships() {
+            const container = document.getElementById('internsList');
+            container.innerHTML = internships.map((item, idx) => `
+            <div class="dynamic-entry">
+                <div class="input-group"><label>Company</label><input class="int-company" value="${escapeHtml(item.company)}" data-idx="${idx}" data-field="company"></div>
+                <div class="input-group"><label>Role</label><input class="int-role" value="${escapeHtml(item.role)}" data-idx="${idx}" data-field="role"></div>
+                <div class="input-group"><label>Duration</label><input class="int-duration" value="${escapeHtml(item.duration)}" data-idx="${idx}" data-field="duration"></div>
+                <div class="input-group"><label>Work Description</label><textarea class="int-desc" data-idx="${idx}" data-field="desc">${escapeHtml(item.desc)}</textarea></div>
+                <div class="input-group"><label>Proof Link</label><input class="int-proof" value="${escapeHtml(item.proof)}" data-idx="${idx}" data-field="proof"></div>
+                <button class="remove-btn" data-idx="${idx}" data-type="intern"><i class="fas fa-trash"></i> Remove</button>
+            </div>`).join('');
+            attachInternEvents();
+        }
+
+        function attachInternEvents() {
+            document.querySelectorAll('.int-company, .int-role, .int-duration, .int-desc, .int-proof').forEach(el => {
+                el.addEventListener('input', function () { if (internships[this.dataset.idx]) internships[this.dataset.idx][this.dataset.field] = this.value; renderAll(); });
+            });
+            document.querySelectorAll('.remove-btn[data-type="intern"]').forEach(btn => btn.onclick = () => { internships.splice(parseInt(btn.dataset.idx), 1); renderAll(); });
+        }
+
+        function renderCerts() {
+            const container = document.getElementById('certsList');
+            container.innerHTML = certifications.map((cert, idx) => `
+            <div class="dynamic-entry">
+                <div class="input-group"><label>Certificate Name</label><input class="cert-name" value="${escapeHtml(cert.name)}" data-idx="${idx}" data-field="name"></div>
+                <div class="input-group"><label>Issuing Org</label><input class="cert-org" value="${escapeHtml(cert.org)}" data-idx="${idx}" data-field="org"></div>
+                <div class="input-group"><label>Issue Date</label><input class="cert-date" value="${escapeHtml(cert.date)}" data-idx="${idx}" data-field="date"></div>
+                <div class="input-group"><label>Credential ID/Link</label><input class="cert-link" value="${escapeHtml(cert.link)}" data-idx="${idx}" data-field="link"></div>
+                <button class="remove-btn" data-idx="${idx}" data-type="cert"><i class="fas fa-trash"></i> Remove</button>
+            </div>`).join('');
+            attachCertEvents

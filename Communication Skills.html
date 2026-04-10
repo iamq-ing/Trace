@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Trance | Vocabulary & Mock Interview Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0a0a0c 0%, #0f0f14 100%);
+      font-family: 'Inter', sans-serif;
+      color: #ecedee;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    /* Navigation Bar */
+    .navbar {
+      background: rgba(10, 10, 12, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(219, 118, 42, 0.2);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #db762a, #e9af61);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .logo i {
+      color: #db762a;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(219, 118, 42, 0.3);
+      padding: 0.6rem 1.2rem;
+      border-radius: 40px;
+      color: #ecedee;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+    }
+
+    .nav-btn:hover {
+      background: linear-gradient(135deg, #db762a, #c86214);
+      border-color: transparent;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(219, 118, 42, 0.3);
+      color: white;
+    }
+
+    .nav-btn.active {
+      background: linear-gradient(135deg, #db762a, #c86214);
+      border-color: transparent;
+      color: white;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* Header */
+    .hero {
+      background: linear-gradient(125deg, #16161a, #0b0b0e, #111116);
+      border-radius: 2rem;
+      padding: 1.8rem 2rem;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(219, 118, 42, 0.2);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .score-panel {
+      background: rgba(17, 18, 21, 0.8);
+      backdrop-filter: blur(10px);
+      border-radius: 28px;
+      padding: 0.6rem 2rem;
+      border: 1px solid rgba(219, 118, 42, 0.3);
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease;
+    }
+    .score-panel:hover {
+      transform: translateY(-2px);
+      border-color: #db762a;
+    }
+    .score-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: #db762a;
+      font-weight: 600;
+    }
+    .score-value {
+      font-size: 3.5rem;
+      font-weight: 800;
+      line-height: 1;
+      background: linear-gradient(135deg, #fff, #db762a);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .score-badge {
+      font-size: 0.7rem;
+      background: rgba(219, 118, 42, 0.15);
+      padding: 4px 12px;
+      border-radius: 40px;
+      margin-top: 6px;
+      display: inline-block;
+      font-weight: 500;
+    }
+    .hero h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(135deg, #fff, #db762a, #e9af61);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .hero p {
+      margin-top: 8px;
+      opacity: 0.85;
+    }
+
+    /* Layout grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 1.8rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: linear-gradient(145deg, #0f0f14 0%, #0b0b0e 100%);
+      border-radius: 1.6rem;
+      padding: 1.5rem;
+      box-shadow: 0 12px 28px -8px rgba(0,0,0,0.3);
+      transition: 0.2s;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(219, 118, 42, 0.3);
+      box-shadow: 0 20px 32px -12px rgba(0,0,0,0.4);
+    }
+    .card h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-left: 5px solid #db762a;
+      padding-left: 14px;
+      color: #db762a;
+    }
+
+    /* Table styles */
+    .chapter-table, .interview-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .chapter-table th, .chapter-table td,
+    .interview-table th, .interview-table td {
+      padding: 12px 8px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .chapter-table th, .interview-table th {
+      font-weight: 600;
+      color: #db762a;
+    }
+    .attempt-btn {
+      background: linear-gradient(135deg, #db762a, #c86214);
+      border: none;
+      color: white;
+      padding: 6px 14px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .attempt-btn:hover {
+      transform: scale(0.96);
+      filter: brightness(1.1);
+    }
+    .score-badge {
+      font-weight: 700;
+      background: rgba(219, 118, 42, 0.15);
+      padding: 4px 10px;
+      border-radius: 40px;
+      display: inline-block;
+      color: #e4a578;
+    }
+    .high-score { background: rgba(219, 118, 42, 0.25); color: #e9af61; }
+    .mid-score { background: rgba(233, 175, 97, 0.15); color: #e9af61; }
+
+    /* Interview row */
+    .interview-item {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 1rem;
+      padding: 0.8rem;
+      margin-bottom: 0.8rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .feedback-text {
+      font-size: 0.75rem;
+      background: rgba(219, 118, 42, 0.1);
+      padding: 8px;
+      border-radius: 14px;
+      margin-top: 6px;
+      color: #e4a578;
+    }
+
+    /* Modal styles for MCQs */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: linear-gradient(145deg, #0f0f14 0%, #0b0b0e 100%);
+      max-width: 600px;
+      width: 90%;
+      border-radius: 2rem;
+      padding: 1.8rem;
+      max-height: 85vh;
+      overflow-y: auto;
+      border: 1px solid rgba(219, 118, 42, 0.3);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .modal-header h3 {
+      color: #db762a;
+    }
+    .mcq-question {
+      margin: 1rem 0;
+      padding: 0.8rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 1rem;
+    }
+    .options label {
+      display: block;
+      margin: 8px 0;
+      color: #ccc;
+    }
+    .submit-mcq {
+      background: linear-gradient(135deg, #db762a, #c86214);
+      margin-top: 1rem;
+      width: 100%;
+    }
+    .close-modal {
+      background: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      border: none;
+      color: white;
+    }
+
+    button {
+      background: linear-gradient(135deg, #db762a, #c86214);
+      border: none;
+      border-radius: 40px;
+      padding: 8px 20px;
+      font-weight: 600;
+      cursor: pointer;
+      color: white;
+      transition: all 0.2s;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.05);
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #db762a;
+      color: #db762a;
+    }
+    .chart-container {
+      margin-top: 1rem;
+      height: 220px;
+    }
+    .rating-meter {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 30px;
+      height: 12px;
+      margin: 8px 0;
+      overflow: hidden;
+    }
+    .rating-fill {
+      background: linear-gradient(90deg, #db762a, #e9af61);
+      width: 0%;
+      height: 100%;
+    }
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      opacity: 0.6;
+      font-size: 0.8rem;
+      color: #555;
+    }
+    @media (max-width: 780px) {
+      body { padding: 0; }
+      .container { padding: 1rem; }
+      .dashboard-grid { gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+    <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo"><i class="fas fa-chart-line"></i> Trance</div>
+      <div class="nav-links">
+        <a href="index.html" class="nav-btn"><i class="fas fa-home"></i> Home</a>
+        <a href="Communication Skills.html" class="nav-btn active"><i class="fas fa-comments"></i> Communication</a>
+        <a href="Resume.html" class="nav-btn"><i class="fas fa-scroll"></i> Resume</a>
+        <a href="Tech Stack.html" class="nav-btn"><i class="fas fa-code"></i> Tech Stack</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="hero">
+      <div class="hero-left">
+        <h1><i class="fas fa-comments"></i> Communication Skills Dashboard</h1>
+        <p>Track Vocabulary Mastery (Chapterwise MCQs) & Mock Interview Performance • Analytics & Growth Timeline</p>
+      </div>
+      <div class="score-panel">
+        <div class="score-label">COMPOSITE SCORE</div>
+        <div class="score-value" id="headerScoreValue">0</div>
+        <div class="score-badge" id="headerScoreBadge">NEEDS WORK</div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="card">
+        <h2><i class="fas fa-book-open"></i> Vocabulary Progress</h2>
+        <table class="chapter-table" id="vocabTable">
+          <thead><tr><th>Chapter</th><th>Marks</th><th>Action</th></tr></thead>
+          <tbody id="vocabTableBody"></tbody>
+        </table>
+        <div style="margin-top: 12px; font-size:0.75rem;"><i class="fas fa-lightbulb"></i> Click "Attempt MCQs" to test vocabulary & store marks.</div>
+      </div>
+
+      <div class="card">
+        <h2><i class="fas fa-microphone-alt"></i> Mock Interviews</h2>
+        <div id="interviewListContainer"></div>
+        <button id="newInterviewBtn" style="margin-top: 12px; width:100%;"><i class="fas fa-plus-circle"></i> + New Mock Interview</button>
+        <div style="margin-top: 12px;"><small>💡 Each new interview records dynamic marks & feedback.</small></div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="card">
+        <h2><i class="fas fa-chart-bar"></i> Chapterwise Performance</h2>
+        <div class="chart-container"><canvas id="chapterBarChart" width="400" height="200" style="max-width:100%; height:200px;"></canvas></div>
+      </div>
+      <div class="card">
+        <h2><i class="fas fa-chart-line"></i> Interview Growth Timeline</h2>
+        <div class="chart-container"><canvas id="interviewLineChart" width="400" height="200" style="max-width:100%; height:200px;"></canvas></div>
+      </div>
+      <div class="card">
+        <h2><i class="fas fa-star"></i> Overall Communication Rating</h2>
+        <div class="flex-between"><span>Composite Score:</span> <strong id="compositeScore">0</strong> / 100</div>
+        <div class="rating-meter"><div class="rating-fill" id="ratingFill"></div></div>
+        <div id="strengthWeaknessBox" style="margin-top: 16px; background: rgba(219, 118, 42, 0.1); border-radius: 1rem; padding: 12px;">
+          <i class="fas fa-chart-simple"></i> <strong>Strengths & Insights</strong><br>
+          <span id="insightsText">Complete chapters & interviews to see analytics.</span>
+        </div>
+      </div>
+    </div>
+    <footer>📊 Chapter marks are stored after each MCQ attempt. Interview marks + feedback improve over time.</footer>
+  </div>
+
+  <div id="mcqModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalChapterTitle">Chapter 1 MCQs</h3>
+        <button class="close-modal" id="closeModalBtn">&times;</button>
+      </div>
+      <div id="mcqQuestionsContainer"></div>
+      <button id="submitMcqBtn" class="submit-mcq">Submit & Save Marks</button>
+    </div>
+  </div>
+
+  <script>
+    const chapters = [
+      { id: 1, name: "Chapter 1: Foundations", questions: [
+        { text: "What is the synonym of 'Eloquent'?", options: ["Rude", "Fluent", "Quiet", "Clumsy"], correct: 1 },
+        { text: "Choose the antonym of 'Benevolent'?", options: ["Kind", "Malevolent", "Generous", "Altruistic"], correct: 1 },
+        { text: "Which word means 'to reduce in amount'?", options: ["Augment", "Diminish", "Expand", "Amplify"], correct: 1 }
+      ]},
+      { id: 2, name: "Chapter 2: Business Vocabulary", questions: [
+        { text: "What does 'Leverage' mean in business context?", options: ["To avoid", "To use advantageously", "To discard", "To weaken"], correct: 1 },
+        { text: "Synonym of 'Paradigm'?", options: ["Example/Model", "Problem", "Mistake", "Delay"], correct: 0 },
+        { text: "What is 'Synergy'?", options: ["Conflict", "Isolation", "Combined effect greater than sum", "Loss"], correct: 2 }
+      ]},
+      { id: 3, name: "Chapter 3: Advanced Communication", questions: [
+        { text: "Meaning of 'Articulate'?", options: ["Mumble", "Express clearly", "Confuse", "Silence"], correct: 1 },
+        { text: "Which is a persuasive technique?", options: ["Rhetorical question", "Ignoring", "Monotone", "Jargon"], correct: 0 },
+        { text: "What does 'Connotation' refer to?", options: ["Literal meaning", "Implied meaning", "Grammar rule", "Spelling"], correct: 1 }
+      ]},
+      { id: 4, name: "Chapter 4: Interpersonal Skills", questions: [
+        { text: "Active listening involves:", options: ["Interrupting", "Paraphrasing", "Daydreaming", "Judging"], correct: 1 },
+        { text: "Empathy means:", options: ["Understanding feelings", "Ignoring", "Dominating", "Criticizing"], correct: 0 },
+        { text: "Non-verbal cue example?", options: ["Eye contact", "Grammar", "Vocabulary", "Punctuation"], correct: 0 }
+      ]},
+      { id: 5, name: "Chapter 5: Public Speaking", questions: [
+        { text: "Best way to handle nervousness?", options: ["Practice", "Avoid eye contact", "Rush speech", "Mumble"], correct: 0 },
+        { text: "What is a hook in speech?", options: ["Attention grabber", "Conclusion", "Transition", "Pause"], correct: 0 },
+        { text: "Which is a vocal variety element?", options: ["Pitch", "Spelling", "Handwriting", "Posture"], correct: 0 }
+      ]}
+    ];
+
+    let chapterMarks = JSON.parse(localStorage.getItem("vocabMarks")) || [0, 0, 0, 0, 0];
+    let interviews = JSON.parse(localStorage.getItem("mockInterviews")) || [];
+    let barChart, lineChart;
+
+    function generateFeedback(marks) {
+      if (marks >= 85) return "✨ Excellent! Confident articulation, strong vocabulary, great structure.";
+      if (marks >= 70) return "👍 Good performance. Work on transitions & eye contact for next level.";
+      if (marks >= 50) return "📘 Satisfactory. More practice with advanced vocabulary & pacing.";
+      return "🌱 Needs improvement. Focus on core communication principles & mock drills.";
+    }
+
+    function persistData() {
+      localStorage.setItem("vocabMarks", JSON.stringify(chapterMarks));
+      localStorage.setItem("mockInterviews", JSON.stringify(interviews));
+    }
+
+    function renderVocabTable() {
+      const tbody = document.getElementById("vocabTableBody");
+      tbody.innerHTML = "";
+      chapters.forEach((ch, idx) => {
+        const marks = chapterMarks[idx] || 0;
+        let scoreClass = marks >= 70 ? "high-score" : (marks >= 40 ? "mid-score" : "");
+        tbody.innerHTML += `<tr><td><strong>${ch.name}</strong></td><td><span class="score-badge ${scoreClass}">${marks} / 100</span></td><td><button class="attempt-btn" data-chapter-index="${idx}"><i class="fas fa-pen-alt"></i> Attempt MCQs</button></td></tr>`;
+      });
+      document.querySelectorAll('.attempt-btn').forEach(btn => {
+        btn.addEventListener('click', () => openMCQModal(parseInt(btn.getAttribute('data-chapter-index'))));
+      });
+    }
+
+    let currentChapterIndex = null;
+    function openMCQModal(chapterIdx) {
+      currentChapterIndex = chapterIdx;
+      const chapter = chapters[chapterIdx];
+      document.getElementById("modalChapterTitle").innerText = `${chapter.name} - Vocabulary Quiz`;
+      const container = document.getElementById("mcqQuestionsContainer");
+      container.innerHTML = "";
+      chapter.questions.forEach((q, qIdx) => {
+        const div = document.createElement("div");
+        div.className = "mcq-question";
+        div.innerHTML = `<strong>${qIdx+1}. ${q.text}</strong><div class="options">` + q.options.map((opt, optIdx) => `<label><input type="radio" name="q${qIdx}" value="${optIdx}"> ${opt}</label>`).join('') + `</div>`;
+        container.appendChild(div);
+      });
+      document.getElementById("mcqModal").style.display = "flex";
+    }
+
+    function calculateMarksFromModal() {
+      const chapter = chapters[currentChapterIndex];
+      let correctCount = 0;
+      for (let i = 0; i < chapter.questions.length; i++) {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        if (selected && parseInt(selected.value) === chapter.questions[i].correct) correctCount++;
+      }
+      return Math.round((correctCount / chapter.questions.length) * 100);
+    }
+
+    document.getElementById("submitMcqBtn").addEventListener("click", () => {
+      if (currentChapterIndex !== null) {
+        chapterMarks[currentChapterIndex] = calculateMarksFromModal();
+        persistData();
+        renderVocabTable();
+        updateChartsAndAnalytics();
+        closeModal();
+      }
+    });
+
+    function closeModal() {
+      document.getElementById("mcqModal").style.display = "none";
+      currentChapterIndex = null;
+    }
+    document.getElementById("closeModalBtn").addEventListener("click", closeModal);
+    window.addEventListener("click", (e) => { if(e.target === document.getElementById("mcqModal")) closeModal(); });
+
+    function renderInterviews() {
+      const container = document.getElementById("interviewListContainer");
+      if (!interviews.length) {
+        container.innerHTML = `<div style="text-align:center; padding:20px;">✨ No interviews yet. Click "New Mock Interview" to start.</div>`;
+        return;
+      }
+      let html = `<div style="max-height: 320px; overflow-y: auto;">`;
+      interviews.slice().reverse().forEach(interview => {
+        const dateObj = new Date(interview.date);
+        const formattedDate = dateObj.toLocaleDateString() + " " + dateObj.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        html += `<div class="interview-item"><div class="flex-between"><span><i class="far fa-calendar-alt"></i> <strong>${formattedDate}</strong></span><span class="score-badge ${interview.marks >= 70 ? 'high-score' : (interview.marks >= 50 ? 'mid-score' : '')}">🎯 ${interview.marks}/100</span></div><div class="feedback-text"><i class="fas fa-comment-dots"></i> ${interview.feedback}</div></div>`;
+      });
+      html += `</div>`;
+      container.innerHTML = html;
+    }
+
+    function addNewInterview() {
+      let newMarks;
+      if (interviews.length === 0) newMarks = Math.floor(Math.random() * 40) + 45;
+      else {
+        const lastMark = interviews[interviews.length-1].marks;
+        let variation = Math.floor(Math.random() * 21) - 5;
+        newMarks = Math.min(100, Math.max(30, lastMark + variation));
+      }
+      interviews.push({ id: Date.now(), date: new Date().toISOString(), marks: newMarks, feedback: generateFeedback(newMarks) });
+      persistData();
+      renderInterviews();
+      updateChartsAndAnalytics();
+    }
+    document.getElementById("newInterviewBtn").addEventListener("click", addNewInterview);
+
+    function updateChartsAndAnalytics() {
+      const ctxBar = document.getElementById('chapterBarChart').getContext('2d');
+      const chapterLabels = chapters.map(c => c.name.substring(0,12));
+      if (barChart) barChart.destroy();
+      barChart = new Chart(ctxBar, { type: 'bar', data: { labels: chapterLabels, datasets: [{ label: 'Marks (%)', data: chapterMarks, backgroundColor: '#db762a', borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: true, scales: { y: { max: 100, title: { display: true, text: 'Score', color: '#888' } }, x: { ticks: { color: '#888' } } } } });
+
+      const ctxLine = document.getElementById('interviewLineChart').getContext('2d');
+      let interviewLabels = interviews.map((_, idx) => `#${idx+1}`);
+      let interviewScores = interviews.map(i => i.marks);
+      if (lineChart) lineChart.destroy();
+      lineChart = new Chart(ctxLine, { type: 'line', data: { labels: interviewLabels, datasets: [{ label: 'Interview Score', data: interviewScores, borderColor: '#db762a', backgroundColor: 'rgba(219,118,42,0.1)', tension: 0.3, fill: true, pointBackgroundColor: '#db762a' }] }, options: { responsive: true, maintainAspectRatio: true, scales: { y: { max: 100, min: 0, ticks: { color: '#888' } }, x: { ticks: { color: '#888' } } } } });
+
+      const avgVocab = chapterMarks.length ? chapterMarks.reduce((a,b)=>a+b,0)/chapterMarks.length : 0;
+      const avgInterview = interviews.length ? interviews.reduce((a,b)=>a+b.marks,0)/interviews.length : 0;
+      let composite = Math.floor((avgVocab * 0.6) + (avgInterview * 0.4));
+      if (interviews.length === 0 && chapterMarks.every(m => m===0)) composite = 0;
+      document.getElementById("compositeScore").innerText = composite;
+      document.getElementById("ratingFill").style.width = composite + "%";
+
+      const headerScore = document.getElementById("headerScoreValue");
+      if (headerScore) headerScore.innerText = composite;
+      const headerBadge = document.getElementById("headerScoreBadge");
+      if (headerBadge) {
+          if (composite >= 80) headerBadge.innerText = "EXCELLENT";
+          else if (composite >= 50) headerBadge.innerText = "GOOD";
+          else headerBadge.innerText = "NEEDS WORK";
+      }
+
+      let insights = "";
+      if (chapterMarks.some(m => m>0) || interviews.length) {
+        const bestChapterIdx = chapterMarks.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
+        const worstChapterIdx = chapterMarks.reduce((iMin, x, i, arr) => x < arr[iMin] ? i : iMin, 0);
+        const trend = interviews.length >= 2 ? (interviews[interviews.length-1].marks - interviews[0].marks) : 0;
+        const trendText = trend > 0 ? `📈 Improving (+${trend})` : (trend < 0 ? `📉 Declining (${trend})` : `⚖️ Stable`);
+        insights = `<strong>✅ Strength:</strong> Best in ${chapters[bestChapterIdx]?.name} (${chapterMarks[bestChapterIdx]}%). <br><strong>⚠️ Area to improve:</strong> ${chapters[worstChapterIdx]?.name} (${chapterMarks[worstChapterIdx]}%). <br><strong>🎤 Interview trend:</strong> ${trendText}.`;
+      } else insights = "Start attempting MCQs and mock interviews to unlock insights.";
+      document.getElementById("insightsText").innerHTML = insights;
+    }
+
+    function init() {
+      renderVocabTable();
+      renderInterviews();
+      updateChartsAndAnalytics();
+      if (interviews.length === 0) {
+        interviews.push({ id: Date.now(), date: new Date(Date.now() - 86400000).toISOString(), marks: 68, feedback: "Good foundation, but need more fluency in business vocabulary." });
+        persistData();
+        renderInterviews();
+        updateChartsAndAnalytics();
+      }
+    }
+    init();
+  </script>
+</body>
+</html>
