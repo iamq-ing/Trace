@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Trance | Interactive Dashboard Suite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0c 0%, #0f0f14 100%);
+            font-family: 'Inter', sans-serif;
+            color: #ecedee;
+            min-height: 100vh;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background: rgba(10, 10, 12, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(219, 118, 42, 0.2);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #db762a, #e9af61);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .logo i {
+            color: #db762a;
+            background: none;
+            -webkit-background-clip: unset;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(219, 118, 42, 0.3);
+            padding: 0.6rem 1.2rem;
+            border-radius: 40px;
+            color: #ecedee;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn:hover {
+            background: linear-gradient(135deg, #db762a, #c86214);
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(219, 118, 42, 0.3);
+            color: white;
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, #db762a, #c86214);
+            border-color: transparent;
+            color: white;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .hero-section h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #db762a, #e9af61);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .hero-section p {
+            color: #888;
+            font-size: 1.1rem;
+        }
+
+        /* Venn Diagram Container - Maximum Overlap */
+        .venn-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 620px;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .venn-diagram {
+            position: relative;
+            width: 700px;
+            height: 600px;
+        }
+
+        .venn-circle {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .venn-circle:hover {
+            transform: scale(1.02);
+            filter: brightness(1.1);
+            z-index: 20;
+        }
+
+        .venn-circle i {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .venn-circle h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .venn-circle p {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            padding: 0 20px;
+        }
+
+        /* Circle positions - moved even closer together for maximum overlap */
+        .circle-comm {
+            background: rgba(72, 181, 208, 0.88);
+            border: 2px solid #48b5d0;
+            top: 10px;
+            left: -20px;
+            z-index: 10;
+        }
+
+        .circle-resume {
+            background: rgba(219, 118, 42, 0.88);
+            border: 2px solid #db762a;
+            top: 10px;
+            right: -20px;
+            z-index: 10;
+        }
+
+        .circle-tech {
+            background: rgba(108, 92, 231, 0.88);
+            border: 2px solid #6c5ce7;
+            bottom: -10px;
+            left: 150px;
+            z-index: 10;
+        }
+
+        /* Feature Cards */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .feature-card {
+            background: linear-gradient(145deg, #0f0f14 0%, #0b0b0e 100%);
+            border-radius: 32px;
+            padding: 1.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(219, 118, 42, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(219, 118, 42, 0.2), rgba(233, 175, 97, 0.1));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.2rem;
+        }
+
+        .feature-icon i {
+            font-size: 2rem;
+            color: #db762a;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            color: #888;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #555;
+            font-size: 0.8rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        @media (max-width: 800px) {
+            .venn-diagram {
+                transform: scale(0.5);
+                margin: -140px 0;
+            }
+            .hero-section h1 {
+                font-size: 1.8rem;
+            }
+            .nav-container {
+                flex-direction: column;
+            }
+            .container {
+                padding: 2rem 1rem;
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .circle-clicked {
+            animation: pulse 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i> Trance
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-btn active">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="Communication Skills.html" class="nav-btn">
+                    <i class="fas fa-comments"></i> Communication
+                </a>
+                <a href="Resume.html" class="nav-btn">
+                    <i class="fas fa-scroll"></i> Resume
+                </a>
+                <a href="Tech Stack.html" class="nav-btn">
+                    <i class="fas fa-code"></i> Tech Stack
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="hero-section">
+            <h1>Welcome to Trance</h1>
+            <p>Your unified ecosystem for career acceleration. Master your communication, perfect your resume, and track your technical growth—all in one immersive platform.</p>
+        </div>
+
+        <!-- Interactive Venn Diagram - Clean with no text -->
+        <div class="venn-wrapper">
+            <div class="venn-diagram">
+                <!-- Communication Skills Circle (Left) -->
+                <div class="venn-circle circle-comm" data-page="Communication Skills.html">
+                    <i class="fas fa-comments"></i>
+                    <h3>Communication</h3>
+                    <h3>Skills</h3>
+                    <p>Vocabulary & Mock Interview</p>
+                </div>
+
+                <!-- Resume Circle (Right) -->
+                <div class="venn-circle circle-resume" data-page="Resume.html">
+                    <i class="fas fa-scroll"></i>
+                    <h3>Resume</h3>
+                    <h3>Trance Pro</h3>
+                    <p>AI-Powered Scoring Engine</p>
+                </div>
+
+                <!-- Tech Stack Circle (Bottom Center) -->
+                <div class="venn-circle circle-tech" data-page="Tech Stack.html">
+                    <i class="fas fa-code"></i>
+                    <h3>Tech Stack</h3>
+                    <h3>Tracker</h3>
+                    <p>Course Progress & Analytics</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature Cards -->
+        <div class="features">
+            <div class="feature-card" data-page="Communication Skills.html">
+                <div class="feature-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h3>Communication Skills</h3>
+                <p>Vocabulary mastery with chapterwise MCQs, mock interview simulator, performance analytics, and real-time feedback.</p>
+            </div>
+            <div class="feature-card" data-page="Resume.html">
+                <div class="feature-icon">
+                    <i class="fas fa-scroll"></i>
+                </div>
+                <h3>Trance Resume Pro</h3>
+                <p>AI-powered resume scoring engine with dynamic sections, skills tagging, project tracking, and certifications.</p>
+            </div>
+            <div class="feature-card" data-page="Tech Stack.html">
+                <div class="feature-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <h3>Tech Stack Tracker</h3>
+                <p>Course progress monitoring, platform practice arenas, milestone achievements, and career readiness radar.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <i class="fas fa-chart-line"></i> Trance | Integrated Skill Development Platform
+    </footer>
+
+    <script>
+        const circles = document.querySelectorAll('.venn-circle');
+        const cards = document.querySelectorAll('.feature-card');
+
+        function navigateTo(page) {
+            if (page) {
+                window.location.href = page;
+            }
+        }
+
+        circles.forEach(circle => {
+            circle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const page = circle.getAttribute('data-page');
+                circle.classList.add('circle-clicked');
+                setTimeout(() => {
+                    circle.classList.remove('circle-clicked');
+                }, 300);
+                navigateTo(page);
+            });
+        });
+
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                const page = card.getAttribute('data-page');
+                navigateTo(page);
+            });
+        });
+
+        if (!localStorage.getItem('vennVisited')) {
+            setTimeout(() => {
+                const toast = document.createElement('div');
+                toast.style.cssText = `
+                    position: fixed;
+                    bottom: 30px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: linear-gradient(135deg, #db762a, #e9af61);
+                    color: #0a0a0a;
+                    padding: 12px 24px;
+                    border-radius: 60px;
+                    font-weight: 600;
+                    z-index: 1000;
+                    animation: slideUp 0.3s ease;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+                `;
+                toast.innerHTML = '<i class="fas fa-hand-peace"></i> Welcome! Click any circle to explore your career tools →';
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 4000);
+                localStorage.setItem('vennVisited', 'true');
+            }, 500);
+        }
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideUp {
+                from { transform: translateX(-50%) translateY(100%); opacity: 0; }
+                to { transform: translateX(-50%) translateY(0); opacity: 1; }
+            }
+            .venn-circle {
+                cursor: pointer;
+            }
+            .feature-card {
+                cursor: pointer;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
